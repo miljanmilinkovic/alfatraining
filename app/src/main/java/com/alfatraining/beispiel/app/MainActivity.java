@@ -1,5 +1,6 @@
 package com.alfatraining.beispiel.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
@@ -17,13 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
     static final String LOG_TAG = MainActivity.class.getName();
+    static final String URL_STRING = "https://jsonplaceholder.typicode.com/todos/"; // "https://jsonplaceholder.typicode.com/users"
 
     ListView mListView;
     ListAdapter mListAdapter;
@@ -48,7 +53,33 @@ public class MainActivity extends AppCompatActivity {
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
 
-        loadUrl();
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                //publishProgress();
+                return loadUrl();
+                //TODO Json verarbeiten und Adapter zuweisen
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                Toast.makeText(MainActivity.this, "URL Laden startet ", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                Toast.makeText(MainActivity.this, "URL geladen " + result, Toast.LENGTH_LONG).show();
+                //TODO Json verarbeiten und Adapter zuweisen
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+                super.onProgressUpdate(values);
+            }
+        }.execute();
     }
 
     @Override
@@ -73,11 +104,24 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadUrl() {
+    private String loadUrl() {
         try {
-            InputStream inputStream = NetworkHelper.getHttpResponse("https://news.yahoo.com/");
+            InputStream inputStream = NetworkHelper.getHttpResponse(URL_STRING);
+
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null)
+                    sb.append(line).append("\n");
+
+                return sb.toString();
+            }
+
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
+        return null;
     }
 }
