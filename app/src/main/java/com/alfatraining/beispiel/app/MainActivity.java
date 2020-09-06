@@ -3,12 +3,14 @@ package com.alfatraining.beispiel.app;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
+import com.alfatraining.beispiel.app.network.NetworkHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 
 import android.view.Menu;
@@ -16,7 +18,12 @@ import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class MainActivity extends AppCompatActivity {
+
+    static final String LOG_TAG = MainActivity.class.getName();
 
     ListView mListView;
     ListAdapter mListAdapter;
@@ -40,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.list_view);
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
+
+        loadUrl();
     }
 
     @Override
@@ -62,5 +71,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadUrl() {
+        try {
+            InputStream inputStream = NetworkHelper.getHttpResponse("https://news.yahoo.com/");
+        } catch (IOException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
     }
 }
