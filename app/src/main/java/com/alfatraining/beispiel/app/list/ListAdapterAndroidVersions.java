@@ -55,17 +55,6 @@ public class ListAdapterAndroidVersions extends BaseAdapter {
         TextView textViewVersionNumber =
                 convertView.findViewById(R.id.txt_version_num);
 
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Thread.sleep(position * 500);
-                } catch(InterruptedException e) {
-                    //TODO
-                }
-            }
-        });
-
         //sets the text for item name and item description from the current item object
         textViewVersionName.setText(getItem(position));
         textViewVersionNumber.setText(mContext.getString (R.string.android_ver, position));

@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,6 +51,29 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.list_view);
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(MainActivity.this, "URL Laden startet ", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+
+                final String result = loadUrl();
+                //TODO Json verarbeiten und Adapter zuweisen
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(MainActivity.this, "URL geladen " + result, Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+            }
+        }).start();
     }
 
     @Override
