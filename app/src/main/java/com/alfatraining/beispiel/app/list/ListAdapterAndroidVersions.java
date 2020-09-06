@@ -43,7 +43,7 @@ public class ListAdapterAndroidVersions extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.list_row, parent, false);
@@ -54,6 +54,17 @@ public class ListAdapterAndroidVersions extends BaseAdapter {
                 convertView.findViewById(R.id.txt_version_name);
         TextView textViewVersionNumber =
                 convertView.findViewById(R.id.txt_version_num);
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Thread.sleep(position * 500);
+                } catch(InterruptedException e) {
+                    //TODO
+                }
+            }
+        });
 
         //sets the text for item name and item description from the current item object
         textViewVersionName.setText(getItem(position));

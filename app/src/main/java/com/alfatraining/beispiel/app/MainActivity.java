@@ -1,6 +1,5 @@
 package com.alfatraining.beispiel.app;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
@@ -18,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,34 +50,6 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.list_view);
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
-
-        new AsyncTask<Void, Void, String>() {
-
-            @Override
-            protected String doInBackground(Void... voids) {
-                //publishProgress();
-                return loadUrl();
-                //TODO Json verarbeiten und Adapter zuweisen
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                Toast.makeText(MainActivity.this, "URL Laden startet ", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                super.onPostExecute(result);
-                Toast.makeText(MainActivity.this, "URL geladen " + result, Toast.LENGTH_LONG).show();
-                //TODO Json verarbeiten und Adapter zuweisen
-            }
-
-            @Override
-            protected void onProgressUpdate(Void... values) {
-                super.onProgressUpdate(values);
-            }
-        }.execute();
     }
 
     @Override
