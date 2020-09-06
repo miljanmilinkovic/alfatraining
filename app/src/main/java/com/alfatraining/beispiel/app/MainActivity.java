@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
 
@@ -52,28 +54,55 @@ public class MainActivity extends AppCompatActivity {
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
 
-        new Thread(new Runnable() {
+        // new Handler() -> main thread!!
+        HandlerThread handlerThread = new HandlerThread("worker");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 MainActivity.this.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Toast.makeText(MainActivity.this, "URL Laden startet ", Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "URL1 Laden startet ", Toast.LENGTH_LONG).show();
+                    }
+                });
 
                 final String result = loadUrl();
                 //TODO Json verarbeiten und Adapter zuweisen
 
                 MainActivity.this.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Toast.makeText(MainActivity.this, "URL geladen " + result, Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "URL1 geladen " + result, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
-        }).start();
+        }, 1000);
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "URL2 Laden startet ", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                final String result = loadUrl();
+                //TODO Json verarbeiten und Adapter zuweisen
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "URL2 geladen " + result, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 
     @Override
