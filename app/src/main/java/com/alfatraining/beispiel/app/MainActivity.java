@@ -1,34 +1,25 @@
 package com.alfatraining.beispiel.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
-import com.alfatraining.beispiel.app.network.NetworkHelper;
+import com.alfatraining.beispiel.app.service.HelloService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.util.Log;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final String LOG_TAG = MainActivity.class.getName();
     static final String URL_STRING = "https://jsonplaceholder.typicode.com/todos/"; // "https://jsonplaceholder.typicode.com/users"
 
     ListView mListView;
@@ -53,56 +44,6 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.list_view);
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
-
-        // new Handler() -> main thread!!
-        HandlerThread handlerThread = new HandlerThread("worker");
-        handlerThread.start();
-        Handler handler = new Handler(handlerThread.getLooper());
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "URL1 Laden startet ", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                final String result = loadUrl();
-                //TODO Json verarbeiten und Adapter zuweisen
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "URL1 geladen " + result, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }, 1000);
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "URL2 Laden startet ", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                final String result = loadUrl();
-                //TODO Json verarbeiten und Adapter zuweisen
-
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "URL2 geladen " + result, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
     }
 
     @Override
@@ -120,31 +61,19 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_start) {
+            Intent intent = new Intent(this, HelloService.class);
+            intent.putExtra(HelloService.SERVICE_PARAM, URL_STRING);
+            startService(intent);
+
+            return true;
+        }
+        if (id == R.id.action_stop) {
+            Intent intent = new Intent(this, HelloService.class);
+            stopService(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private String loadUrl() {
-        try {
-            InputStream inputStream = NetworkHelper.getHttpResponse(URL_STRING);
-
-            if (inputStream != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-                StringBuilder sb = new StringBuilder();
-
-                String line = null;
-                while ((line = reader.readLine()) != null)
-                    sb.append(line).append("\n");
-
-                return sb.toString();
-            }
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
-        }
-        return null;
     }
 }

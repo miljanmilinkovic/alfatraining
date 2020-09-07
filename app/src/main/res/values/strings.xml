@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Alfatraining</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_start">Start Service</string>
+    <string name="action_stop">Stop Service</string>
 
     <string name="android_ver">Version : %d</string>
 </resources>
