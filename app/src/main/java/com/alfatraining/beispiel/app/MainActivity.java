@@ -1,7 +1,6 @@
 package com.alfatraining.beispiel.app;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -15,14 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,32 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_start) {
 
-            if (!mBound) {
-                Intent intent = new Intent(this, HelloService.class);
-                bindService(intent, connection, Context.BIND_AUTO_CREATE);
-            }
-            if (mBound) {
-                // HelloService Methode
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String result = mService.loadUrl(URL_STRING);
-                        Log.i(LOG_TAG, result);
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "result: " + result, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                }).start();
-            }
-
+            Intent intent = new Intent(this, HelloService.class);
+            startService(intent);
             return true;
         }
         if (id == R.id.action_stop) {
-            unbindService(connection);
-            mBound = false;
+            Intent intent = new Intent(this, HelloService.class);
+            stopService(intent);
             return true;
         }
 

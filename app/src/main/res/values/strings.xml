@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Alfatraining</string>
-    <string name="action_start">Get Serviced</string>
+    <string name="action_start">Start Foreground Service</string>
     <string name="action_stop">Stop Service</string>
 
     <string name="android_ver">Version : %d</string>
+    <string name="notification_title">Service running</string>
+    <string name="notification_message">Running a service in the foreground</string>
 </resources>
