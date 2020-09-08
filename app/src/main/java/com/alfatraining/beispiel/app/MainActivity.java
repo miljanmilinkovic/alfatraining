@@ -1,11 +1,14 @@
 package com.alfatraining.beispiel.app;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
+import com.alfatraining.beispiel.app.receiver.StartServiceReceiver;
 import com.alfatraining.beispiel.app.service.HelloService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     HelloService mService;
     boolean mBound = false;
+    BroadcastReceiver mReceiver;
 
     /** Callbacks für bindService() */
     private ServiceConnection connection = new ServiceConnection() {
@@ -69,6 +73,20 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.list_view);
         mListAdapter = new ListAdapterAndroidVersions(this);
         mListView.setAdapter(mListAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter("android.intent.action.AIRPLANE_MODE");
+        mReceiver = new StartServiceReceiver();
+        this.registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(mReceiver);
     }
 
     @Override
