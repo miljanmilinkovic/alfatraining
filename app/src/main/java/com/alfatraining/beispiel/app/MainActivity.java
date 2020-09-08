@@ -1,11 +1,9 @@
 package com.alfatraining.beispiel.app;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import com.alfatraining.beispiel.app.list.ListAdapterAndroidVersions;
@@ -18,19 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.os.IBinder;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String REFRESH_LIST_ACTION = "com.alfatraining.beispiel.refresh.action";
     private static final String LOG_TAG = MainActivity.class.getName();
     static final String URL_STRING = "https://jsonplaceholder.typicode.com/todos/"; // "https://jsonplaceholder.typicode.com/users"
 
@@ -73,11 +68,10 @@ public class MainActivity extends AppCompatActivity {
         mRefreshReceiver = new BroadcastReceiver(){
             @Override
             public void onReceive(Context context, Intent intent) {
-                mListAdapter.notifyDataSetChanged();
-                Toast.makeText(context, "refresh list receiver", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "result from service: " + intent.getStringExtra(HelloService.SERVICE_RESULT), Toast.LENGTH_SHORT).show();
             }
         };
-        IntentFilter refreshIntentFilter = new IntentFilter(REFRESH_LIST_ACTION);
+        IntentFilter refreshIntentFilter = new IntentFilter(HelloService.SERVICE_FINISHED_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshReceiver, refreshIntentFilter);
     }
 

@@ -24,6 +24,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class HelloService extends Service {
 
+    public static final String SERVICE_FINISHED_ACTION = "com.alfatraining.beispiel.finish.action";
+    public static final String SERVICE_RESULT = "SERVICE_RESULT";
     private static final String LOG_TAG = HelloService.class.getName();
     private static final int ONGOING_NOTIFICATION_ID = 2;
     private static final String NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID";
@@ -53,9 +55,19 @@ public class HelloService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Intent broadcastIntent = new Intent(MainActivity.REFRESH_LIST_ACTION);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-        Toast.makeText(this, "send broadcast intent", Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Intent broadcastIntent = new Intent(SERVICE_FINISHED_ACTION);
+                broadcastIntent.putExtra(SERVICE_RESULT, "result return from service");
+                LocalBroadcastManager.getInstance(HelloService.this).sendBroadcast(broadcastIntent);
+            }
+        }).start();
         //TODO Service Operation
         return START_STICKY;
     }
