@@ -7,8 +7,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,24 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class HelloService extends Service {
 
     private static final String LOG_TAG = HelloService.class.getName();
     private static final int ONGOING_NOTIFICATION_ID = 2;
     private static final String NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID";
-
-    // Binder für Klienten
-    private final IBinder binder = new HelloBinder();
-
-    /**
-     * Klient Binder Klasse
-     */
-    public class HelloBinder extends Binder {
-        public HelloService getService() {
-            // Klienten können Service benutzen
-            return HelloService.this;
-        }
-    }
 
     @Override
     public void onCreate() {
@@ -66,6 +53,9 @@ public class HelloService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Intent broadcastIntent = new Intent(MainActivity.REFRESH_LIST_ACTION);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+        Toast.makeText(this, "send broadcast intent", Toast.LENGTH_SHORT).show();
         //TODO Service Operation
         return START_STICKY;
     }

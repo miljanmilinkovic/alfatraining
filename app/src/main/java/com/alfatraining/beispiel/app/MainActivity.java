@@ -2,6 +2,7 @@ package com.alfatraining.beispiel.app;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -15,44 +16,31 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.IBinder;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String REFRESH_LIST_ACTION = "com.alfatraining.beispiel.refresh.action";
     private static final String LOG_TAG = MainActivity.class.getName();
     static final String URL_STRING = "https://jsonplaceholder.typicode.com/todos/"; // "https://jsonplaceholder.typicode.com/users"
 
     ListView mListView;
-    ListAdapter mListAdapter;
+    BaseAdapter mListAdapter;
 
     HelloService mService;
     boolean mBound = false;
     BroadcastReceiver mReceiver;
-
-    /** Callbacks für bindService() */
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // Bind fertig, IBinder bereit
-            HelloService.HelloBinder binder = (HelloService.HelloBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
-
+    BroadcastReceiver mRefreshReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +69,23 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter("android.intent.action.AIRPLANE_MODE");
         mReceiver = new StartServiceReceiver();
         this.registerReceiver(mReceiver, intentFilter);
+
+        mRefreshReceiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mListAdapter.notifyDataSetChanged();
+                Toast.makeText(context, "refresh list receiver", Toast.LENGTH_SHORT).show();
+            }
+        };
+        IntentFilter refreshIntentFilter = new IntentFilter(REFRESH_LIST_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshReceiver, refreshIntentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         this.unregisterReceiver(mReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRefreshReceiver);
     }
 
     @Override
